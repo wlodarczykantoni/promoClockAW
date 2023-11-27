@@ -13,12 +13,24 @@ import java.time.format.DateTimeFormatter;
 
 @Controller
 public class HomeController {
-    @RequestMapping("/index")
+   /* @RequestMapping("/index")
     public String index() {
         return "index";
     }
 
-    @GetMapping("/index/{data}")
+    @GetMapping("/{data}")*/
+
+    @GetMapping(value = "/")
+    public String index() {
+        return "index";
+    }
+
+    @GetMapping(value = "/welcome/{name}")
+    public String name(@PathVariable("name") String name, Model model) {
+        model.addAttribute("imie", name);
+        return "index";
+    }
+
     public String clock(@PathVariable String data, Model model) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyy");
         LocalDateTime podanyCzas = LocalDateTime.of(LocalDate.parse(data, formatter), LocalTime.MIDNIGHT);
@@ -54,6 +66,6 @@ public class HomeController {
         model.addAttribute("roznicaSekund", roznicaSekund);
 
         /// odpalenie  HTML
-        return "index.html";
+        return "index";
     }
 }
