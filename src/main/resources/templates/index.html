@@ -2,9 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Title</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clock Data</title>
 </head>
 <body>
-Witaj <span th:text="${imie}"></span> w Promo Clock!
+<h1>Clock Data</h1>
+<p>Aktualna data: ${aktualnaData}</p>
+<p>Oczekiwana data: ${oczekiwanaData}</p>
+<p>Pozostały czas:</p>
+<ul>
+  <li>Lata: ${roznicaLat}</li>
+  <li>Miesiące: ${roznicaMiesiecy}</li>
+  <li>Dni: ${roznicaDni}</li>
+  <li>Godziny: ${roznicaGodzin}</li>
+  <li>Minuty: ${roznicaMinut}</li>
+  <li>Sekundy: ${roznicaSekund}</li>
+</ul>
 </body>
 </html>
