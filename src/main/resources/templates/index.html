@@ -1,22 +1,180 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clock Data</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dane Zegara</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            margin: 50px;
+            background-color: #f0f0f0;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        p {
+            margin: 10px 0;
+            color: #555;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            margin: 5px 0;
+            color: #777;
+        }
+
+        label,
+        input {
+            margin-bottom: 10px;
+            display: block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 8px;
+            width: 80%;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #timer {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 20px;
+            color: #333;
+        }
+    </style>
 </head>
+
 <body>
-<h1>Clock Data</h1>
-<p>Aktualna data: ${aktualnaData}</p>
-<p>Oczekiwana data: ${oczekiwanaData}</p>
+<h1>Dane Zegara</h1>
+
+<p>Aktualna data: <span id="aktualnaData"></span></p>
+<p>Oczekiwana data: <span id="oczekiwanaData"></span></p>
 <p>Pozostały czas:</p>
+
 <ul>
-  <li>Lata: ${roznicaLat}</li>
-  <li>Miesiące: ${roznicaMiesiecy}</li>
-  <li>Dni: ${roznicaDni}</li>
-  <li>Godziny: ${roznicaGodzin}</li>
-  <li>Minuty: ${roznicaMinut}</li>
-  <li>Sekundy: ${roznicaSekund}</li>
+    <li>Lata: <span id="roznicaLat"></span></li>
+    <li>Miesiące: <span id="roznicaMiesiecy"></span></li>
+    <li>Dni: <span id="roznicaDni"></span></li>
+    <li>Godziny: <span id="roznicaGodzin"></span></li>
+    <li>Minuty: <span id="roznicaMinut"></span></li>
+    <li>Sekundy: <span id="roznicaSekund"></span></li>
 </ul>
+
+<h1>Formularz Daty</h1>
+<form id="dateForm">
+    <label for="selectedDate">Wybierz datę:</label>
+    <input type="date" id="selectedDate" required>
+
+    <label for="selectedTime">Wybierz godzinę:</label>
+    <input type="time" id="selectedTime" required>
+
+    <button type="button" id="submitDateBtn">Wyślij</button>
+</form>
+
+<div id="timer">00:00:00</div>
+
+<script>
+    (function () {
+        let targetDate;
+        let countdownInterval;
+
+        document.getElementById('dateForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            submitDate();
+            startCountdown();
+        });
+
+        document.getElementById('submitDateBtn').addEventListener('click', function () {
+            submitDate();
+            startCountdown();
+        });
+
+        function submitDate() {
+            // ustawianie daty
+            const selectedDate = document.getElementById('selectedDate').value;
+            const selectedTime = document.getElementById('selectedTime').value;
+
+            targetDate = new Date(selectedDate + 'T' + selectedTime);
+
+            const currentDate = new Date();
+
+            document.getElementById('aktualnaData').textContent = currentDate.toLocaleString();
+            document.getElementById('oczekiwanaData').textContent = targetDate.toLocaleString();
+
+            // roznica w czasie
+         const timeDiff = targetDate.getTime() - currentDate.getTime();
+           const diffInSeconds = Math.floor(timeDiff / 1000);
+          const diffInMinutes = Math.floor(diffInSeconds / 60);
+           const diffInHours = Math.floor(diffInMinutes / 60);
+           const diffInDays = Math.floor(diffInHours / 24);
+           const diffInMonths = Math.floor(diffInDays / 30.44);
+            const diffInYears = Math.floor(diffInMonths / 12);
+
+            // odsiwerzanie pol
+            document.getElementById('roznicaLat').textContent = diffInYears;
+            document.getElementById('roznicaMiesiecy').textContent = diffInMonths % 12;
+            document.getElementById('roznicaDni').textContent = diffInDays % 30;
+            document.getElementById('roznicaGodzin').textContent = diffInHours % 24;
+            document.getElementById('roznicaMinut').textContent = diffInMinutes % 60;
+            document.getElementById('roznicaSekund').textContent = diffInSeconds % 60;
+        }
+
+        function startCountdown() {
+            // Rozpocznij odliczanie
+            clearInterval(countdownInterval);
+            countdownInterval = setInterval(updateTimer, 1000);
+            updateTimer();
+        }
+
+        function updateTimer() {
+            // Oblicz różnicę czasu
+            const now = new Date();
+            const timeDiff = targetDate.getTime() - now.getTime();
+
+            // czy nie koniec
+            if (timeDiff <= 0) {
+                clearInterval(countdownInterval);
+                document.getElementById('timer').textContent = 'Czas minął!';
+            } else {
+
+                const seconds = Math.floor(timeDiff / 1000) % 60;
+                const minutes = Math.floor(timeDiff / 1000 / 60) % 60;
+                const hours = Math.floor(timeDiff / (1000 * 60 * 60)) % 24;
+
+
+                document.getElementById('timer').textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+        }
+
+        // odswierzanie
+        setInterval(function () {
+            submitDate();
+            updateTimer();
+        }, 1000);
+    })();
+</script>
 </body>
+
 </html>
