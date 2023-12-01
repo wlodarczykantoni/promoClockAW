@@ -63,6 +63,10 @@
             margin-top: 20px;
             color: #333;
         }
+          #timer-container {
+            text-align: right;
+            margin-top: 20px;
+        }
     </style>
 </head>
 
@@ -93,8 +97,31 @@
     <button type="button" id="submitDateBtn">Wyślij</button>
 </form>
 
-<div id="timer">00:00:00</div>
 
+
+<div id="timer-container">
+    <label for="timerColor">Wybierz kolor timera:</label>
+    <input type="color" id="timerColor">
+
+    <label for="timerSize">Wybierz rozmiar timera:</label>
+    <input type="number" id="timerSize" min="10" max="100">
+
+    <label for="timerFont">Wybierz czcionkę timera:</label>
+    <select id="timerFont">
+        <option value="Arial">Arial</option>
+        <option value="Helvetica">Helvetica</option>
+        <option value="Verdana">Verdana</option>
+        <!-- mozna dodaj wiecej czcionek -->
+    </select>
+
+    <button type="button" id="applyStylesBtn">Zastosuj style timera</button>
+
+
+</div>
+
+<button id="downloadCodeBtn">Pobierz kod HTML</button>
+
+<div id="timer">00:00:00</div>
 <script>
     (function () {
         let targetDate;
@@ -124,12 +151,12 @@
             document.getElementById('oczekiwanaData').textContent = targetDate.toLocaleString();
 
             // roznica w czasie
-         const timeDiff = targetDate.getTime() - currentDate.getTime();
-           const diffInSeconds = Math.floor(timeDiff / 1000);
-          const diffInMinutes = Math.floor(diffInSeconds / 60);
-           const diffInHours = Math.floor(diffInMinutes / 60);
-           const diffInDays = Math.floor(diffInHours / 24);
-           const diffInMonths = Math.floor(diffInDays / 30.44);
+            const timeDiff = targetDate.getTime() - currentDate.getTime();
+            const diffInSeconds = Math.floor(timeDiff / 1000);
+            const diffInMinutes = Math.floor(diffInSeconds / 60);
+            const diffInHours = Math.floor(diffInMinutes / 60);
+            const diffInDays = Math.floor(diffInHours / 24);
+            const diffInMonths = Math.floor(diffInDays / 30.44);
             const diffInYears = Math.floor(diffInMonths / 12);
 
             // odsiwerzanie pol
@@ -158,11 +185,9 @@
                 clearInterval(countdownInterval);
                 document.getElementById('timer').textContent = 'Czas minął!';
             } else {
-
                 const seconds = Math.floor(timeDiff / 1000) % 60;
                 const minutes = Math.floor(timeDiff / 1000 / 60) % 60;
                 const hours = Math.floor(timeDiff / (1000 * 60 * 60)) % 24;
-
 
                 document.getElementById('timer').textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
             }
@@ -173,8 +198,42 @@
             submitDate();
             updateTimer();
         }, 1000);
+
+        function applyTimerStyles() {
+            const timerElement = document.getElementById('timer');
+            const timerColor = document.getElementById('timerColor').value;
+            const timerSize = document.getElementById('timerSize').value;
+            const timerFont = document.getElementById('timerFont').value;
+
+            timerElement.style.color = timerColor;
+            timerElement.style.fontSize = `${timerSize}px`;
+            timerElement.style.fontFamily = timerFont;
+        }
+
+        document.getElementById('applyStylesBtn').addEventListener('click', function () {
+            applyTimerStyles();
+        });
+
+//do pobrania kodu
+         function downloadHTML() {
+            const htmlContent = document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'timer.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        document.getElementById('downloadCodeBtn').addEventListener('click', function () {
+            downloadHTML();
+        });
     })();
 </script>
+
 </body>
 
 </html>
