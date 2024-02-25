@@ -100,5 +100,11 @@ public class HomeController {
         }
         return clockResponse;
     }
-}
 
+/*
+    @GetMapping(value = "/welcome/{name}")
+    public String name(@PathVariable("name") String name, Model model) {
+        model.addAttribute("imie", name);
+        return "index";
+    }*/
+}
