@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 @Controller
 @ResponseBody
@@ -23,34 +24,40 @@ public class GifController {
         int duration = 1000; // ms = 1s
 
         // Pobierz kolor, rozmiar i czcionkę z obiektu DateRequest
-        Color timerColor = Color.decode(dateRequest.getTimerColor());
-        int timerSize = dateRequest.getTimerSize();
-        String timerFont = dateRequest.getTimerFont();
+        Color timerColor = Color.BLACK;
+        if(dateRequest.getTimerColor() != null){
+                timerColor = Color.decode(dateRequest.getTimerColor());
+        }
+       int timerSize = dateRequest.getTimerSize() >10 ? dateRequest.getTimerSize() : 10;
+        String timerFont = dateRequest.getTimerFont() != null ? dateRequest.getTimerFont() : "Arial";
 
         return gifGenerator.generateCountdownGif(String.valueOf(targetDateTime), duration, timerColor, timerSize, timerFont);
     }
 
 
     static class DateRequest {
-        private LocalDate date;
-        private LocalTime time;
+        private String date;
+        private String time;
         private String timerColor;
         private int timerSize;
         private String timerFont;
 
         public LocalDate getDate() {
-            return date;
+            DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            return LocalDate.parse(date, format);
         }
 
-        public void setDate(LocalDate date) {
+        public void setDate(String date) {
             this.date = date;
         }
 
         public LocalTime getTime() {
-            return time;
+            DateTimeFormatter format = DateTimeFormatter.ofPattern("HH-mm");
+            return LocalTime.parse(time, format);
+
         }
 
-        public void setTime(LocalTime time) {
+        public void setTime(String time) {
             this.time = time;
         }
 

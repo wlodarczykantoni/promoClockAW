@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="pl">
 
 <head>
@@ -122,175 +121,198 @@
 <div id="timer">00:00:00</div>
 
 <script>
-        (function () {
-            let targetDate;
-            let countdownInterval;
+    (function () {
+        let targetDate;
+        let countdownInterval;
 
-            // Obsługa formularza daty
-            document
-                .getElementById("dateForm")
-                .addEventListener("submit", function (event) {
-                    event.preventDefault();
-                    submitDate();
-                    startCountdown();
-                });
-
-            // Obsługa przycisku "Wyślij"
-            document
-                .getElementById("submitDateBtn")
-                .addEventListener("click", function () {
-                    submitDate();
-                    startCountdown();
-                });
-
-            // Obsługa przycisku "Generuj GIF"
-            document
-                .getElementById("generateGifBtn")
-                .addEventListener("click", generateGif);
-
-            // Obsługa przycisku "Zastosuj style timera"
-            document
-                .getElementById("applyStylesBtn")
-                .addEventListener("click", applyTimerStyles);
-
-            // Funkcja wysyłająca datę
-            function submitDate() {
-                const selectedDate = document.getElementById("selectedDate").value;
-                const selectedTime = document.getElementById("selectedTime").value;
-
-                targetDate = new Date(selectedDate + "T" + selectedTime);
-
-                const currentDate = new Date();
-
-                document.getElementById("aktualnaData").textContent =
-                    currentDate.toLocaleString();
-                document.getElementById("oczekiwanaData").textContent =
-                    targetDate.toLocaleString();
-
-                const timeDiff = targetDate.getTime() - currentDate.getTime();
-                const diffInSeconds = Math.floor(timeDiff / 1000);
-                const diffInMinutes = Math.floor(diffInSeconds / 60);
-                const diffInHours = Math.floor(diffInMinutes / 60);
-                const diffInDays = Math.floor(diffInHours / 24);
-                const diffInMonths = Math.floor(diffInDays / 30.44);
-                const diffInYears = Math.floor(diffInMonths / 12);
-
-                document.getElementById("roznicaLat").textContent = diffInYears;
-                document.getElementById("roznicaMiesiecy").textContent =
-                    diffInMonths % 12;
-                document.getElementById("roznicaDni").textContent = diffInDays % 30;
-                document.getElementById("roznicaGodzin").textContent =
-                    diffInHours % 24;
-                document.getElementById("roznicaMinut").textContent =
-                    diffInMinutes % 60;
-                document.getElementById("roznicaSekund").textContent =
-                    diffInSeconds % 60;
-            }
-
-            // Funkcja rozpoczynająca odliczanie
-            function startCountdown() {
-                clearInterval(countdownInterval);
-                countdownInterval = setInterval(updateTimer, 1000);
-                updateTimer();
-            }
-
-            // Funkcja aktualizująca licznik czasu
-            function updateTimer() {
-                const now = new Date();
-                const timeDiff = targetDate.getTime() - now.getTime();
-
-                if (timeDiff <= 0) {
-                    clearInterval(countdownInterval);
-                    document.getElementById("timer").textContent = "Czas minął!";
-                } else {
-                    const seconds = Math.floor(timeDiff / 1000) % 60;
-                    const minutes = Math.floor(timeDiff / 1000 / 60) % 60;
-                    const hours = Math.floor(timeDiff / (1000 * 60 * 60)) % 24;
-
-                    document.getElementById("timer").textContent = `${hours
-                        .toString()
-                        .padStart(2, "0")}:${minutes
-                        .toString()
-                        .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-                }
-            }
-
-            // Funkcja generująca plik GIF
-            function generateGif() {
-                const selectedDate = document.getElementById("selectedDate").value;
-                const selectedTime = document.getElementById("selectedTime").value;
-                const formattedTime = selectedTime.replace(":", "-");
-                const requestUrl = "/generate-gif"; // Poprawiona nazwa zmiennej
-                //Połączenie z serwerem, które nie działa.
-                //POST http://localhost:8080/generate-gif 500 (Internal Server Error)
-                fetch(requestUrl, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            date: selectedDate,
-                            time: formattedTime,
-                        }),
-                    })
-                    .then((response) => {
-                        if (!response.ok) {
-                            throw new Error("Nie udało się wygenerować GIFa.");
-                        }
-                        return response.blob();
-                    })
-                    .then((blob) => {
-                        const gifUrl = window.URL.createObjectURL(blob); // Poprawiona nazwa zmiennej
-                        const a = document.createElement("a");
-                        a.href = gifUrl;
-                        a.download = "countdown.gif";
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                        window.URL.revokeObjectURL(gifUrl); // Poprawiona nazwa zmiennej
-                    })
-                    .catch((error) => {
-                        console.error(error.message);
-                    });
-            }
-
-            // Funkcja zastosowująca style timera
-            function applyTimerStyles() {
-                const timerColor = document.getElementById("timerColor").value;
-                const timerSize = document.getElementById("timerSize").value;
-                const timerFont = document.getElementById("timerFont").value;
-
-                document.getElementById("timer").style.color = timerColor;
-                document.getElementById("timer").style.fontSize = timerSize + "px";
-                document.getElementById("timer").style.fontFamily = timerFont;
-            }
-
-            // Skrypt do pobierania kodu HTML
-            document.getElementById("downloadCodeBtn").addEventListener("click", function() {
-                // Pobierz kod HTML z bieżącej strony
-                const htmlCode = document.documentElement.outerHTML;
-
-                // Utwórz obiekt Blob zawierający kod HTML
-                const blob = new Blob([htmlCode], { type: "text/html" });
-
-                // Utwórz adres URL dla obiektu Blob
-                const url = URL.createObjectURL(blob);
-
-                // Utwórz element a i ustaw mu odpowiednie atrybuty
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = "kod.html";
-
-                // Dodaj element a do dokumentu i kliknij w niego, aby rozpocząć pobieranie
-                document.body.appendChild(a);
-                a.click();
-
-                // Zwolnij zasoby po pobraniu pliku
-                URL.revokeObjectURL(url);
-                document.body.removeChild(a);
+        // Obsługa formularza daty
+        document
+            .getElementById("dateForm")
+            .addEventListener("submit", function (event) {
+                event.preventDefault();
+                submitDate();
+                startCountdown();
             });
-        })();
-    </script>
+
+        // Obsługa przycisku "Wyślij"
+        document
+            .getElementById("submitDateBtn")
+            .addEventListener("click", function () {
+                submitDate();
+                startCountdown();
+            });
+
+        // Obsługa przycisku "Generuj GIF"
+        document
+            .getElementById("generateGifBtn")
+            .addEventListener("click", generateGif);
+
+        // Obsługa przycisku "Zastosuj style timera"
+        document
+            .getElementById("applyStylesBtn")
+            .addEventListener("click", applyTimerStyles);
+
+        // Funkcja wysyłająca datę
+        function submitDate() {
+            const selectedDate = document.getElementById("selectedDate").value;
+            const selectedTime = document.getElementById("selectedTime").value;
+
+            targetDate = new Date(selectedDate + "T" + selectedTime);
+
+            const currentDate = new Date();
+
+            document.getElementById("aktualnaData").textContent =
+                currentDate.toLocaleString();
+            document.getElementById("oczekiwanaData").textContent =
+                targetDate.toLocaleString();
+
+            const timeDiff = targetDate.getTime() - currentDate.getTime();
+            const diffInSeconds = Math.floor(timeDiff / 1000);
+            const diffInMinutes = Math.floor(diffInSeconds / 60);
+            const diffInHours = Math.floor(diffInMinutes / 60);
+            const diffInDays = Math.floor(diffInHours / 24);
+            const diffInMonths = Math.floor(diffInDays / 30.44);
+            const diffInYears = Math.floor(diffInMonths / 12);
+
+            document.getElementById("roznicaLat").textContent = diffInYears;
+            document.getElementById("roznicaMiesiecy").textContent =
+                diffInMonths % 12;
+            document.getElementById("roznicaDni").textContent = diffInDays % 30;
+            document.getElementById("roznicaGodzin").textContent =
+                diffInHours % 24;
+            document.getElementById("roznicaMinut").textContent =
+                diffInMinutes % 60;
+            document.getElementById("roznicaSekund").textContent =
+                diffInSeconds % 60;
+        }
+
+        // Funkcja rozpoczynająca odliczanie
+        function startCountdown() {
+            clearInterval(countdownInterval);
+            countdownInterval = setInterval(updateTimer, 1000);
+            updateTimer();
+        }
+
+        // Funkcja aktualizująca licznik czasu
+        function updateTimer() {
+            const now = new Date();
+            const timeDiff = targetDate.getTime() - now.getTime();
+
+            if (timeDiff <= 0) {
+                clearInterval(countdownInterval);
+                document.getElementById("timer").textContent = "Czas minął!";
+            } else {
+                const seconds = Math.floor(timeDiff / 1000) % 60;
+                const minutes = Math.floor(timeDiff / 1000 / 60) % 60;
+                const hours = Math.floor(timeDiff / (1000 * 60 * 60)) % 24;
+
+                document.getElementById("timer").textContent = `${hours
+                    .toString()
+                    .padStart(2, "0")}:${minutes
+                    .toString()
+                    .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+            }
+        }
+
+        function generateGif() {
+            const selectedDate = document.getElementById("selectedDate").value;
+            const selectedTime = document.getElementById("selectedTime").value;
+            const color = document.getElementById("timerColor").value;
+            const fntSize = document.getElementById("timerSize").value;
+            const fntName = document.getElementById("timerFont").value;
+            const formattedTime = selectedTime.replace(":", "-");
+            const requestUrl = "/generate-gif";
+
+            fetch(requestUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    date: selectedDate,
+                    time: formattedTime,
+                    timerColor: color,
+                    timerSize: fntSize,
+                    timerFont: fntName
+                }),
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error("Nie udało się wygenerować GIFa.");
+                    }
+                    return response.blob();
+                })
+                .then((blob) => {
+                    const gifUrl = window.URL.createObjectURL(blob);
+                    const a = document.createElement("img");
+                    a.src = gifUrl;
+                    document.body.appendChild(a);
+                })
+                .catch((error) => {
+                    console.error(error.message);
+                });
+        }
+
+        // Funkcja zastosowująca style timera
+        function applyTimerStyles() {
+            const timerColor = document.getElementById("timerColor").value;
+            const timerSize = document.getElementById("timerSize").value;
+            const timerFont = document.getElementById("timerFont").value;
+
+            document.getElementById("timer").style.color = timerColor;
+            document.getElementById("timer").style.fontSize = timerSize + "px";
+            document.getElementById("timer").style.fontFamily = timerFont;
+        }
+        // Funkcja aktualizująca licznik czasu
+function updateTimer() {
+    const now = new Date();
+    const timeDiff = targetDate.getTime() - now.getTime();
+
+    if (timeDiff <= 0) {
+        clearInterval(countdownInterval);
+        document.getElementById("timer").textContent = "Czas minął!";
+    } else {
+        const milliseconds = Math.abs(timeDiff);
+        const days = Math.floor(milliseconds / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((milliseconds % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((milliseconds % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((milliseconds % (1000 * 60)) / 1000);
+
+        document.getElementById("timer").textContent = `${days.toString().padStart(2, "0")} dni ${hours
+            .toString()
+            .padStart(2, "0")}:${minutes
+            .toString()
+            .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+    }
+}
+
+
+        // Skrypt do pobierania kodu HTML
+        document.getElementById("downloadCodeBtn").addEventListener("click", function () {
+            // Pobierz kod HTML z bieżącej strony
+            const htmlCode = document.documentElement.outerHTML;
+
+            // Utwórz obiekt Blob zawierający kod HTML
+            const blob = new Blob([htmlCode], { type: "text/html" });
+
+            // Utwórz adres URL dla obiektu Blob
+            const url = URL.createObjectURL(blob);
+
+            // Utwórz element a i ustaw mu odpowiednie atrybuty
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "kod.html";
+
+            // Dodaj element a do dokumentu i kliknij w niego, aby rozpocząć pobieranie
+            document.body.appendChild(a);
+            a.click();
+
+            // Zwolnij zasoby po pobraniu pliku
+            URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        });
+    })();
+</script>
 </body>
 
 </html>
